@@ -11,7 +11,7 @@ export default class ProductManager {
 
     constructor(){
         this.#products = []
-        this.#path = "Products.json"
+        this.#path = "./Products.json"
         this.#loadProducts()
     }
 
