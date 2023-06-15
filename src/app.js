@@ -1,30 +1,19 @@
+// Importaciones
+
 import express from "express"
-import handlebars from "express-handlebars"
-import __dirname from "./utils.js"
-import viewsRouter from "./routes/views.router.js"
-import ProductManager from "./ProductManager.js"
-import {Server} from "socket.io"
+import products from "../routes/products.router.js"
+import carts from "../routes/carts.router.js"
+
+
+// Inicializacion del servidor
 
 const app = express()
-const httpServer = app.listen(8080, () => console.log("Listening to port 8080"))
+const server = app.listen(8080, () => console.log("Server running on port 8080"))
 
-const io = new Server(httpServer)
+// Configuracion del servidor
 
-app.engine("handlebars", handlebars.engine())
-app.set("views", __dirname + "/views")
-app.set("view engine", "handlebars")
-app.use(express.static(__dirname + "/public"))
-app.use("/", viewsRouter)
-
-
-const PM = new ProductManager()
-const {products} = PM.getProducts()
-app.get('/', (req, res) => {
-  res.render('home', products)
-})
-io.on("connection", socket => {
-    console.log("Nuevo cliente conectado")
-    socket.on('productUpdated', () => {
-      io.emit('updatedProducts', products)
-    })
-})
+app.use(express.json())
+app.use(express.urlencoded({extended:true}))
+app.use("/api/products", products)
+app.use("/api/carts", carts)
+app.use(express.static("public"))
